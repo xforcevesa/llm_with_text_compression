@@ -31,11 +31,12 @@ print(f"Target text length: {N} tokens")
 
 # 初始化proto-tokens e和m（可训练嵌入）
 d_model = model.config.hidden_size  # 模型隐藏层维度
-e = nn.Parameter(torch.randn(d_model, device=device))  # proto-token e
+proto_token_number = 4 # proto-token e number
+e = [nn.Parameter(torch.randn(d_model, device=device)) for _ in range(proto_token_number)]  # proto-token e
 m = nn.Parameter(torch.randn(d_model, device=device))  # proto-token m（论文中可共享，这里先不共享）
 
 # 定义优化器，只优化e和m
-optimizer = AdamW([e, m], lr=0.04, betas=(0.9, 0.999), weight_decay=0.01)
+optimizer = AdamW(e + [m], lr=0.04, betas=(0.9, 0.999), weight_decay=0.01)
 lr_scheduler = MultiStepLR(optimizer, milestones=[500, 2000, 4000, 6000, 8000], gamma=0.5)
 
 # 训练参数
@@ -48,7 +49,7 @@ for iteration in range(num_iterations):
     
     # 构建输入序列：Z = [e, m, m, ..., m]（长度为N）
     # 第一个位置是e，其余N-1个位置是m
-    input_embeddings = torch.stack([e] + [m] * (N - 1))  # 形状: [N, d_model]
+    input_embeddings = torch.stack(e + [m] * (N - proto_token_number))  # 形状: [N, d_model]
     
     # 由于我们使用自定义嵌入，需要创建attention mask（因果掩码）
     attention_mask = torch.tril(torch.ones(N, N, device=device))  # 下三角矩阵，形状: [N, N]
@@ -79,7 +80,7 @@ for iteration in range(num_iterations):
 # 评估重建精度
 with torch.no_grad():
     # 使用训练后的e和m构建输入
-    input_embeddings = torch.stack([e] + [m] * (N - 1))
+    input_embeddings = torch.stack(e + [m] * (N - proto_token_number))
     attention_mask = torch.tril(torch.ones(N, N, device=device))
     outputs = model(inputs_embeds=input_embeddings.unsqueeze(0), attention_mask=attention_mask.unsqueeze(0))
     logits = outputs.logits.squeeze(0)

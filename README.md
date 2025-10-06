@@ -18,6 +18,10 @@ Reconstruction accuracy: 85.19%
 Predicted text: This is an example text we we want to reconstruct using proto-tokens. It should long enough enough to test the..
 ```
 
+## Text Compression Using LSTM
+
+Awaiting for enhancement.
+
 ## Future Work
 
 1. Exploring a better token chunking method to compress the context and in the meanwhile achieves semantic coherency.
