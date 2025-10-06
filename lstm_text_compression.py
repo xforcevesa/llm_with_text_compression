@@ -279,6 +279,7 @@ def main():
         
         # 解码（还原）
         decoder_input = torch.full((1,), START_TOKEN, dtype=torch.long)
+        decoder_input = model.embedding(decoder_input)
         outputs, _ = model.decode(decoder_input.to(device), hidden, cell)
         
         # 获取预测结果
