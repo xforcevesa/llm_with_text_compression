@@ -294,6 +294,37 @@ class Decoder(nn.Module):
     
     def forward(self, x):
         return self.block(x)
+    
+import numpy as np
+
+
+class ByteTokenizer:
+    def __init__(self):
+        self.vocab_size = 256
+        self.bos_idx = 254
+        self.eos_idx = 255
+        self.dtype = np.uint8
+
+    def encode(self, seqs: list[str], add_bos: bool = False, add_eos: bool = False, **kwargs) -> list[dict[str, np.ndarray]]:
+        total_outputs = []
+        for text in seqs:
+            text_byte = text.encode("utf-8")
+
+            if add_bos:
+                text_byte = bytes([self.bos_idx]) + text_byte
+            if add_eos:
+                text_byte = text_byte + bytes([self.eos_idx])
+            text_byte = bytearray(text_byte)
+            text_byte_ids = np.array(text_byte, dtype=self.dtype)
+
+            total_outputs.append({"input_ids": text_byte_ids})
+
+        return total_outputs
+
+    def decode(self, tokens: np.ndarray | list[int], **kwargs) -> str:
+        if isinstance(tokens, np.ndarray):
+            tokens = tokens.tolist()
+        return bytearray(tokens).decode("utf-8", **kwargs)
 
 # H-Net整体模型（单级层次）
 class HNet(nn.Module):
@@ -310,6 +341,15 @@ class HNet(nn.Module):
         # x: (batch_size, seq_len, d_model)
         # 编码器处理
         enc_output = self.encoder(x)  # (batch_size, seq_len, d_model)
+
+        # "This is an apple."
+        # ByteTokenizer
+        # ['T', 'h', 'i', 's', ' ', ...]
+        # RouterModule + Chunking - Dynamic Chunking
+        # [['T', 'h', 'i', 's'], ]
+        # Dechunk
+        # ['T', 'h', 'i', 's', ' ', ...]
+
         
         # 动态分块：计算边界
         router_output = self.router(enc_output)
