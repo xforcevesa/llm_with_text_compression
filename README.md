@@ -22,6 +22,12 @@ Predicted text: This is an example text we we want to reconstruct using proto-to
 
 Awaiting for enhancement.
 
+## Rapid Online Suffix Automation Mechanism
+
+A novel attention alternative mechanism.
+
+![alt text](rosa/description.png)
+
 ## Future Work
 
 1. Exploring a better token chunking method to compress the context and in the meanwhile achieves semantic coherency.
