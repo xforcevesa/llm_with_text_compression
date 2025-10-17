@@ -18,6 +18,18 @@ Reconstruction accuracy: 85.19%
 Predicted text: This is an example text we we want to reconstruct using proto-tokens. It should long enough enough to test the..
 ```
 
+## LLM Gradient Plot (ERF, Experimental)
+
+The gradient distribution of `Qwen/Qwen3-0.6B`:
+
+![ERF Qwen3-0.6B](./erf_Qwen_Qwen3-0.6B.png)
+
+The gradient distribution of `gpt2`:
+
+![ERF gpt2](./erf_gpt2.png)
+
+WARNINGS: The implementation may have issues & bugs. Welcome to report.
+
 ## Text Compression Using LSTM
 
 Awaiting for enhancement.

@@ -9,7 +9,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 # 加载预训练模型和tokenizer（这里使用GPT-2小型模型作为示例，论文中使用的是Pythia或Llama-3）
-model_name = "RWKV/RWKV7-Goose-World2.9-0.4B-HF"  # 可以替换为"EleutherAI/pythia-160m"或"meta-llama/Llama-3.2-1B"等，但需要相应权限和资源
+model_name = "Qwen/Qwen3-0.6B"  # 可以替换为"EleutherAI/pythia-160m"或"meta-llama/Llama-3.2-1B"等，但需要相应权限和资源
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True).to(device)
 
